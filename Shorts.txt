@@ -1,0 +1,105 @@
+
+📝 Embeddings & Cosine Similarity — Short Notes
+1. What are Embeddings?
+
+An embedding converts text into a numerical vector that represents its semantic meaning.
+
+"Tell me about Sunil Gavaskar"
+             ↓
+      Embedding Model
+             ↓
+[0.12, -0.43, 0.78, ...]
+
+Similar meanings → vectors tend to be closer.
+
+2. OpenAI Embeddings
+from langchain_openai import OpenAIEmbeddings
+
+embedding = OpenAIEmbeddings(
+    model="text-embedding-3-large",
+    dimensions=300
+)
+text-embedding-3-large → embedding model
+dimensions=300 → output vector contains 300 numbers
+3. Document Embeddings
+doc_embedding = embedding.embed_documents(documents)
+
+Converts multiple documents into vectors.
+
+If there are 6 documents and dimension = 300:
+
+6 documents → 6 × 300 vectors
+4. Query Embedding
+query_embedding = embedding.embed_query(query)
+
+Converts the user's query into a vector.
+
+Query → Vector
+5. Cosine Similarity
+
+Cosine similarity measures how similar two vectors are based on their direction.
+
+from sklearn.metrics.pairwise import cosine_similarity
+
+scores = cosine_similarity(
+    [query_embedding],
+    doc_embedding
+)
+
+General interpretation:
+
+Score	Meaning
+~1	Very similar
+~0	Little/no similarity
+~-1	Opposite direction
+
+For semantic search, a higher score means greater semantic similarity.
+
+6. Finding the Best Document
+index, score = sorted(
+    enumerate(scores[0]),
+    key=lambda x: x[1],
+    reverse=True
+)[0]
+
+This:
+
+Associates each document with its similarity score.
+Sorts by score.
+Takes the highest score.
+
+Then:
+
+print(documents[index])
+
+returns the most relevant document.
+
+🔥 Important Concept
+
+Your complete workflow is:
+
+Documents
+    ↓
+Document Embeddings
+    ↓
+Vector Representations
+         ↑
+         │
+User Query → Query Embedding
+         ↓
+Cosine Similarity
+         ↓
+Similarity Scores
+         ↓
+Highest Score
+         ↓
+Most Relevant Document
+⭐ Remember this
+
+Embedding = Convert meaning into numbers
+
+Cosine Similarity = Compare meaning between vectors
+
+Semantic Search = Find documents with the most similar meaning
+
+
